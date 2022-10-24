@@ -1,3 +1,43 @@
+# Introdução- DesignPatterns
+Design patterns são abordagens arquiteturais de sistemas.
+
+O padrão é como devemos nos expressar em uma linguagem de programação e como os desenvolvedores estão acostumados.
+
+Eles foram popularizados pela GOF- Gangue of Four e traduzidos para várias linguagens OO
+
+Veremos no curso:
+
+1. SOLID Design Principles
+
+2. Os Patterns
+    1. Creational
+        1. Builder
+        2. Factories
+            1. Abstract Factory
+            2. Factory Method
+        3. Prototype
+        4. Singleton
+    2. Structural
+        1. Adapter
+        2. Bridge
+        3. Composite
+        4. Decorator
+        5. Facade
+        6. FLyweight
+        7. Proxy
+    3. Behavioral
+        0. Chain of Responsability
+        1. Command
+        2. Interpreter
+        3. Iterator
+        4. Mediator
+        5. Memento
+        6. Null Object
+        7. Observer
+        8. State
+        9. Strategy
+        10. Template Method
+        11. Visitor
 # Gamma categorizations
 
 Design Patterns are typically split into three categories that are called by ***Gamma Categorizations*** pq foi feito por Erich Gamma, um dos GoF
@@ -560,3 +600,63 @@ Uma das maneira é com serializaçao, vamos suport q temos uma class Foo que imp
     {
 
 E a impressão dos 2 foo saem corretas e obviamente esta é uma simples abordagem q vc pode fazer e existem varios tipos de serializações há bibliotecas que usam reflections em vez e se a biblioteca usa reflection vc não precisa implementar o Serializable
+
+
+## Singleton
+
+Por volta de 15 anos após a publicação do design patterns, seus autores se juntaram para discutir sobre os design Patterns e notaram q queriam manter todos os padrões como estão, com a exceção do ***SINGLETON***.
+
+### When discussing which patterns to drop, we found that we still love them all. (Not really- I'm in favor of droppining Singleton. Its use is almost always a desing smell -Erich Gamma
+
+A motivação por trás do singleton é bem óbvia para alguns componentes dos nossos sistemas. Ele apenas faz sentido quando precisamos garantir q temos apenas uma instância dentro do nosso sistema. Por exemplo, quando vc tem um objeto o qual acessa uma database . talvez ele carregue a database no construtuor dele dentro da memória e então dispoem a informação sobre os conteúdos da database uma vez carregada.  Vc realmente não quer mais do que uma instância dela pq não há um ponto em q vc rodando uma vez a database, vc não quer ler um milhão de vezes mais a database, especialemnte quando vc está testando código, vc não quer iniciar a leitura da database milhões de vezes no eseus testes pq testes por definição saõ supostamente para serem números. 
+
+Outro exemplo é o Object Factory, digamos que vc tem um componenete factory separado o qal ana verdade apenas cria algumas companias, vc realmente iria querer mais do que uma instância disso? bem , na verdade não, pq uma factory não é supostametne para ter algum estado que deve ficar modificando.
+
+Então, olhando para situações , por exemplo, onde o construtor chama um objeto em particular é particularmente ineficiente e vc apenas quer ter um construtor chamado uma única vez e em sequência, uma vez chamado, uma vez construido o object singleton vc que oferecer para todos um único consumidor com a mesma instância deste objeto que vc construiu uma vez    e tbm para evitar que os clientes façam copias adicionais deste objeto e claro ainda há outras preocupações no top disto tudo, por exemplo vc não quer que o seiu objeto seja "lazy", vc que algum tipo de segurança para tread safe então não hpa outra maneira em q o construtor é na verdade executada 2 vezes e introduz algum tipo de race condition
+
+
+Portanto SIngleton é essencialmente apenas um componente o qual é instanciado apenas uma vez e utilizado muitas vezes sem ser instanciado mais do que uma única vez
+
+
+## Adapter - Um construtor que adapta uma interface existente X para conformar para uma requerida interface Y
+
+Agora estamos nos movendo para os design patterns estruturais e o primeiro é o ***Adapter*** que pe bem simples, é tudo sobre pegar uma interface que vc tem de algum sistema e transformá-la no que vc deseja. 
+
+Assim como um T de tomada, vc tem uma interface na entrada e vc quer adaptá-la para a saída modificando apenas a interface então entra um tipo de adaptador e sai outro tipo de adaptador. 
+
+Atenção: nós não podemos modificar nossas interfaces sempre que quisermos pq pode ser q não seja possível assim como utilizar um T de 110v para uma tomada de 220v.  
+
+Então, nós usamos um  device especial (Adapter) oara nos dar a itnerface que precisamos da interface q temos
+
+## Bridge - Conectando componentes através de abstrações
+
+ A motivação para criarmos uma bridge é que ele evita o que é chamado de explosão completa do produto cartesiano.
+Por exemplo, vamos supor q vc tem uma classe base chamada ThreadScheduler e ela pode ser preemptiva(pode ser parada por um certo momento esperando um ok para continuar) e rodar em windows e linux, e ser usada em um cenário 2x2 então vc decide implementar 4 classes:
+
+duas para com/sem preempção do windows e outras duas para com/sem preempção no linux, e o bridge é o que evita a entity explosion  
+
+Então em vez de vc ter
+
+                                    ThreadScheduler
+                                         ^
+                        |----------------|----------------|
+                PreemptiveThreadScheduler   CoopertiveThreadScheduler
+                        ^                               ^                                                         
+       |----------------|                               |----------------|                                                         
+       ^                ^                               ^                ^                         
+    WindowsPTS      UNIXPTS                        WINDOWSCTS          UNIXCTS
+
+Vc pode ter isso:
+
+                                    ThreadScheduler   ---------------------------------
+                                --------------------------                            |
+                                    -plataformScheduler                               V
+                                         ^                                        IPlataformScheduler
+                        |----------------|----------------|                           ^                      
+                PreemptiveThreadScheduler   CoopertiveThreadScheduler                 |----------------|     
+                                                                                      ^                ^               
+                                                                                WINDOWSSCHEDULER   UNIXSCHEDULER                        
+
+
+Logo
+### Bridge é um mecaniscmo que desacopla uma interface(hierarquia) de uma implementação(Hierarquia)
